@@ -9,6 +9,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.*;
 
+
 public class Main extends Application {
     Graph graph = new Graph();
     Map<String, String> landmarkToNode = new HashMap<>();
@@ -107,6 +108,12 @@ public class Main extends Application {
         graph.addNode("Night Market");
         graph.addNode("Bank");
         graph.addNode("Cedi House");
+        graph.addNode("Law School");
+        graph.addNode("Business School");
+        graph.addNode("Akuafo Hall");
+        graph.addNode("Pentagon Hostel");
+        graph.addNode("Jones-Quartey Building");
+        
 
         graph.addEdge("Legon Hall", "UGCS", 2);
         graph.addEdge("UGCS", "Balme Library", 1.5);
@@ -115,52 +122,61 @@ public class Main extends Application {
         graph.addEdge("Night Market", "Bank", 1);
         graph.addEdge("Bank", "Cedi House", 1.2);
         graph.addEdge("Cedi House", "Balme Library", 1.1);
+        graph.addEdge("Balme Library", "Law School", 1.4);
+        graph.addEdge("Law School", "Business School", 1.0);
+        graph.addEdge("Balme Library", "Pentagon Hostel", 3.0);
+        graph.addEdge("UGCS", "Bank", 3.4);
+
     }
 
     private void setupLandmarks() {
         landmarkToNode.put("bank", "Bank");
         landmarkToNode.put("cedi house", "Cedi House");
         landmarkToNode.put("library", "Balme Library");
+        landmarkToNode.put("law school", "Law School");
+        landmarkToNode.put("business school", "Business School");
+        landmarkToNode.put("night market", "Night Market");
+
     }
 
     private void showRouteOnMap(String pathString) {
         List<String> nodes = Arrays.asList(pathString.split(" → "));
-        Image campusMap = new Image(getClass().getResourceAsStream("/com/ug/javafx/Campus_map.jpg"));
+        Image campusMap = new Image(getClass().getResourceAsStream("/com/ug/javafx/Map.png"));
 
-        // Coordinates based on actual UG campus map layout
-        Map<String, Point2D> coords = Map.of(
-            "Legon Hall", new Point2D(450, 580),           // Lower central area
-            "UGCS", new Point2D(920, 100),                // Engineering Sciences area
-            "Balme Library", new Point2D(700, 350),       // Central campus library area
-            "Night Market", new Point2D(380, 450),        // Student services area
-            "Bank", new Point2D(600, 400),                // Campus services area
-            "Cedi House", new Point2D(480, 390)           // Cedi Conference Centre (red star)
-        );
+
+        if (campusMap.isError()) {
+            System.out.println("❌ Failed to load image: " + campusMap.getException());
+        } else {
+            System.out.println("✅ Map image loaded successfully!");
+        }
+
+
+    Map<String, Point2D> coords = Map.ofEntries(
+         Map.entry("UGCS", new Point2D(200, 250)),
+         Map.entry("Balme Library", new Point2D(300, 200)),
+         Map.entry("Night Market", new Point2D(180, 350)),
+         Map.entry("Bank", new Point2D(250, 320)),
+         Map.entry("Cedi House", new Point2D(270, 280)),
+         Map.entry("Legon Hall", new Point2D(100, 300)),
+         Map.entry("Akuafo Hall", new Point2D(120, 350)),
+         Map.entry("Pentagon Hostel", new Point2D(450, 380)),
+         Map.entry("Cedi Conference Centre", new Point2D(270, 280)),
+         Map.entry("Business School", new Point2D(320, 240)),
+         Map.entry("Law School", new Point2D(350, 260)),
+         Map.entry("Central Cafeteria", new Point2D(260, 320)),
+         Map.entry("Jones-Quartey Building", new Point2D(210, 270))
+    );
+
 
         MapCanvas canvas = new MapCanvas(campusMap, coords, nodes);
-        
-        // Create enhanced map window
         Stage mapStage = new Stage();
-        StackPane mapPane = new StackPane(canvas);
-        Scene mapScene = new Scene(mapPane, campusMap.getWidth(), campusMap.getHeight());
-        
-        mapStage.setScene(mapScene);
-        mapStage.setTitle("UG Campus Navigation - Route: " + pathString);
-        mapStage.setResizable(true);
-        mapStage.setMaximized(false);
-        
-        // Center the window
-        mapStage.centerOnScreen();
+        mapStage.setTitle("Top Route on Map");
+        mapStage.setScene(new Scene(new StackPane(canvas)));
         mapStage.show();
-        
-        // Bring window to front
-        mapStage.toFront();
-        mapStage.requestFocus();
     }
-
-    public static void main(String[] args) {
+public static void main(String[] args) {
         launch(args);
     }
-}
+};
 // Note: The MapCanvas class is assumed to be implemented elsewhere in the project.
 // It should handle the drawing of the campus map and the route based on the provided coordinates.
